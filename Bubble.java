@@ -6,7 +6,7 @@ public class Bubble {
     private int id;
     private String story;
     private int nChild;
-    private int [] nextChilds = new int[3];
+    private int [] nextChilds;
     final static String FNAME_SUFFIX = ".txt";
 
     Bubble(int id){
@@ -17,25 +17,38 @@ public class Bubble {
     } // Bubble
 
     public void loadFromFile(){
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(getID() + FNAME_SUFFIX);
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(id + FNAME_SUFFIX);
         String story = "";
-        Scanner s = new Scanner(inputStream);
-        setID(s.nextInt());
-        setNChild(s.nextInt());
-        int [] nextChilds = new int[getNChild()];
-        for (int i = 0; i < getNChild(); i++){
-            nextChilds[i] = s.nextInt();
-        } // for
-        setNextChilds(nextChilds, getNChild());
-        while (s.hasNextLine()){
-            story += s.nextLine();
-            story += "\n";
-        }
-        System.out.println(story);
-        setStory(story);
-        s.close();
+        try {
+            BufferedReader s = new BufferedReader(new InputStreamReader(inputStream));
 
-    }
+            /* Not really necessary, but the first character of the file is the id, after all */
+            this.id = Character.getNumericValue(s.read());
+            s.readLine();
+            this.nChild = Character.getNumericValue(s.read());
+            s.readLine();
+            this.nextChilds = new int[this.nChild];
+            for (int i = 0; i < getNChild(); i++){
+                this.nextChilds[i] = Character.getNumericValue(s.read());
+                s.skip(1);
+            } // for
+            String newLine = "";
+            while ((newLine = s.readLine())!= null){
+                story += newLine;
+                story += "\n";
+            }
+
+            this.story = story;
+
+            /* Output in console log for reference */
+            System.out.println(story);
+
+            s.close();
+        } catch (IOException e){
+            System.out.println("IO Error");
+        } // try
+
+    } //loadFromFile
 
     /* get the ID of current story */
     public int getID(){
@@ -64,6 +77,7 @@ public class Bubble {
     }
 
     public void setNextChilds(int [] nextChilds, int nChild){
+        this.nextChilds = new int[nChild];
         for (int i = 0; i < nChild; i++){
             this.nextChilds[i] = nextChilds[i];
         } // for

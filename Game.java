@@ -50,6 +50,7 @@ public class Game extends JPanel{
 
         int xPosition = 0;
         int yPosition = 0;
+
         for(String line : firstBubble.getStory().split("\n")){
             g.drawString(line, xPosition, yPosition += g.getFontMetrics().getHeight());
         }
